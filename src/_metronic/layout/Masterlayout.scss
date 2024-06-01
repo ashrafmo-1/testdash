@@ -1,0 +1,17 @@
+@media (min-width: 992px) {
+    .header-fixed.toolbar-fixed .wrapper {
+        padding-top: 7%;
+        padding-left: 0;
+    }
+}
+@media (min-width: 1025px) {
+    .header-fixed.toolbar-fixed .wrapper {
+        padding-top: 9%;
+        padding-left: 0;
+    }
+}
+
+.wrapper {
+    position: relative;
+}
+
