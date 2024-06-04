@@ -2,7 +2,7 @@ import axios from 'axios'
 import {useEffect, useState} from 'react'
 
 // Get Data Type
-type TServices = {
+type TBussinesPartner = {
   id: number
   title: string
   image: string
@@ -11,21 +11,23 @@ type TServices = {
 }
 
 // Post Data Type
-interface Services {
+interface BussinesPartner {
   image: File
   title: string
 }
 
-export const useServicesHooks = () => {
+export const useBussinesPartner = () => {
+
+
   const baseUrl = 'http://alrmoz.com/creativity/public'
-  const [response, setResponse] = useState<TServices[]>([])
+  const [response, setResponse] = useState<TBussinesPartner[]>([])
   async function getServiceData() {
-    const {data} = await axios.get(`${baseUrl}/api/services`)
+    const {data} = await axios.get(`${baseUrl}/api/business_partner`)
     setResponse(data.data)
   }
 
   async function deleteService(id: number) {
-    await axios.delete(`${baseUrl}/api/services/${id}`)
+    await axios.delete(`${baseUrl}/api/business_partner/${id}`)
     getServiceData() // Refresh the data after deletion
   }
 
@@ -43,26 +45,37 @@ export const useServicesHooks = () => {
     setTitle(event.target.value)
   }
 
+  const [loading, setLoading] = useState(false)
+
   const handleUpload = async () => {
     if (!selectedImage) return // Handle no image selected
 
     try {
+      setLoading(true)
+
       const formData = new FormData()
       formData.append('image', selectedImage)
       formData.append('title', title)
 
-      const response = await axios.post<Services>(`${baseUrl}/api/services`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
+      const response = await axios.post<BussinesPartner>(
+        `${baseUrl}/api/business_partner`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
 
       console.log('Image uploaded successfully:', response.data) // Handle response data
       window.location.reload()
     } catch (error) {
       console.error('Upload failed:', error) // Handle upload errors
+    }finally {
+      setLoading(false)
     }
   }
+
   useEffect(() => {
     getServiceData()
   }, [])
@@ -74,5 +87,6 @@ export const useServicesHooks = () => {
     handleImageChange,
     handleTitleChange,
     setResponse,
+    loading
   }
 }

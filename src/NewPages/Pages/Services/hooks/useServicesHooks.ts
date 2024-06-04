@@ -11,38 +11,42 @@ type TServices = {
 }
 
 // Post Data Type
-interface Offer {
+interface Services {
   image: File
   title: string
 }
 
-export const useOfferHook = () => {
+export const useServicesHooks = () => {
+  const [id, setID] = useState<number>()
+  function handleUpdate(id: number) {
+    setID(id)
+    console.log(id)
+  }
   const baseUrl = 'http://alrmoz.com/creativity/public'
   const [response, setResponse] = useState<TServices[]>([])
+  const [deleteStatus, setDeleteStatus] = useState(false)
   async function getServiceData() {
-    const {data} = await axios.get(`${baseUrl}/api/offers`)
+    const {data} = await axios.get(`${baseUrl}/api/services`)
     setResponse(data.data)
   }
 
   async function deleteService(id: number) {
-    await axios.delete(`${baseUrl}/api/offers/${id}`)
-    getServiceData() // Refresh the data after deletion
+    try {
+      await axios.delete(`${baseUrl}/api/services/${id}`)
+      getServiceData() // Refresh the data after deletion
+    } catch (error: any) {
+      console.log(error)
+    }finally{
+      setDeleteStatus(false)
+    }
   }
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [title, setTitle] = useState<string>('')
-  const [subtitle, setSubtitle] = useState<number>(1)
-  const [serviceId, setServiceId] = useState<number>(1)
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const imageFile = event.target.files?.[0]
     if (!imageFile) return // Handle empty selection
-
-    // Check if it's an image file
-    if (!imageFile.type.startsWith('image/')) {
-      console.error('Uploaded file is not an image!')
-      return
-    }
 
     setSelectedImage(imageFile)
   }
@@ -50,24 +54,19 @@ export const useOfferHook = () => {
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value)
   }
-  const handleSubTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSubtitle(parseInt(event.target.value, 10))
-  }
-  const handleServiceId = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setServiceId(parseInt(event.target.value, 10))
-  }
+
+  const [loading, setLoading] = useState(false)
 
   const handleUpload = async () => {
     if (!selectedImage) return // Handle no image selected
 
     try {
+      setLoading(true)
       const formData = new FormData()
       formData.append('image', selectedImage)
       formData.append('title', title)
-      formData.append('subtitle', subtitle.toString())
-      formData.append('service_id', serviceId.toString())
 
-      const response = await axios.post<Offer>(`${baseUrl}/api/offers`, formData, {
+      const response = await axios.post<Services>(`${baseUrl}/api/services`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -77,8 +76,11 @@ export const useOfferHook = () => {
       window.location.reload()
     } catch (error) {
       console.error('Upload failed:', error) // Handle upload errors
+    } finally {
+      setLoading(false)
     }
   }
+
   useEffect(() => {
     getServiceData()
   }, [])
@@ -90,7 +92,9 @@ export const useOfferHook = () => {
     handleImageChange,
     handleTitleChange,
     setResponse,
-    handleSubTitle,
-    handleServiceId,
+    id,
+    handleUpdate,
+    loading,
+    deleteStatus
   }
 }

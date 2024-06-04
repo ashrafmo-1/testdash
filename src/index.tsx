@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom'
 import axios from 'axios'
 import {Chart, registerables} from 'chart.js'
 import {QueryClient, QueryClientProvider} from 'react-query'
-import {ReactQueryDevtools} from 'react-query/devtools'
 
 //
 import i18n from 'i18next'
@@ -79,7 +78,6 @@ ReactDOM.render(
         <AppRoutes />
       </AuthProvider>
     </MetronicI18nProvider>
-    <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>,
   document.getElementById('root')
 )

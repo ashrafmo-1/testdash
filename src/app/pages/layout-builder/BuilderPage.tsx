@@ -16,7 +16,6 @@ const BuilderPage: React.FC = () => {
     const updatedData = {...config, ...fieldsToUpdate}
 
     setConfig(updatedData)
-    console.log(config)
   }
 
   const updateConfig = () => {

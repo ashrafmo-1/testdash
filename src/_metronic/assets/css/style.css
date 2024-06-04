@@ -48340,6 +48340,7 @@ body {
     left: 0;
     z-index: 101;
     overflow: hidden;
+    background-color: #fff;
   }
   .aside-static .aside {
     position: relative;

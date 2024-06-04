@@ -1,4 +1,4 @@
-import Services from './Services'
-import Banners from './Banners'
-import Offer from './Offer'
+import Services from './Services/Services'
+import Banners from './Banners/Banners'
+import Offer from './offer/Offer'
 export {Services, Banners, Offer}

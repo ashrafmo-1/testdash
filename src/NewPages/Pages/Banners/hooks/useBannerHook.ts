@@ -24,9 +24,21 @@ export const useBannerHook = () => {
     setResponse(data.data)
   }
 
+  const [deleted, setDeleted] = useState(false)
+
   async function deleteService(id: number) {
-    await axios.delete(`${baseUrl}/api/banners/${id}`)
-    getServiceData() // Refresh the data after deletion
+    const confirmDelete = window.confirm('Are you sure you want to delete this item?')
+
+    if (confirmDelete) {
+      setDeleted(true)
+      await axios.delete(`${baseUrl}/api/banners/${id}`)
+      getServiceData() // Refresh the data after deletion
+      setTimeout(() => {
+        setDeleted(false)
+      }, 1000)
+    } else {
+      setDeleted(false)
+    }
   }
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
@@ -43,10 +55,14 @@ export const useBannerHook = () => {
     setTitle(event.target.value)
   }
 
+  const [loading, setLoading] = useState(false)
+
   const handleUpload = async () => {
     if (!selectedImage) return // Handle no image selected
 
     try {
+      setLoading(true)
+
       const formData = new FormData()
       formData.append('image', selectedImage)
       formData.append('title', title)
@@ -61,6 +77,8 @@ export const useBannerHook = () => {
       window.location.reload()
     } catch (error) {
       console.error('Upload failed:', error) // Handle upload errors
+    } finally {
+      setLoading(false)
     }
   }
   useEffect(() => {
@@ -74,5 +92,7 @@ export const useBannerHook = () => {
     handleImageChange,
     handleTitleChange,
     setResponse,
+    loading,
+    deleted,
   }
 }

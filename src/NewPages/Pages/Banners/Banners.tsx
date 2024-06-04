@@ -1,22 +1,32 @@
 import {useState} from 'react'
-import {useBannerHook} from '../PageHooks/useBannerHook'
+import {useBannerHook} from './hooks/useBannerHook'
+import {useNavigate} from 'react-router-dom'
+import {Alert, Spinner} from 'react-bootstrap'
 
 const Banners = () => {
   const [status, setStatus] = useState(false)
-  const {deleteService, handleImageChange, handleTitleChange, handleUpload, response} =
-    useBannerHook()
+  const navigate = useNavigate()
+  const {
+    deleteService,
+    handleImageChange,
+    handleTitleChange,
+    handleUpload,
+    deleted,
+    loading,
+    response,
+  } = useBannerHook()
 
   return (
     <>
       <div className={status ? `d-flex justify-content-end` : `d-flex justify-content-between`}>
         {status ? (
-          <h2>Banners</h2>
+          <h2>اللافتات</h2>
         ) : (
           <>
-            <button className='btn btn-secondary' onClick={() => setStatus(true)}>
-              Add Banner
+            <button className='btn btn-primary' onClick={() => setStatus(true)}>
+              اضافه لافته
             </button>
-            <h2>Banners</h2>
+            <h2>اللافتات</h2>
           </>
         )}
       </div>
@@ -27,22 +37,28 @@ const Banners = () => {
               <div className='col-12 d-flex justify-content-center'>
                 <div className='card p-3 w-50'>
                   <div className='mb-10'>
-                    <label className='required form-label'>title</label>
+                    <label className='required form-label'>العنوان</label>
                     <input
                       type='text'
                       className='form-control form-control-solid'
-                      placeholder='title'
+                      placeholder='العنوان'
                       onChange={handleTitleChange}
                     />
-                    <label className='required form-label'>title</label>
+                    <label className='required form-label'>الصوره</label>
                     <input
                       type='file'
                       className='form-control form-control-solid'
-                      placeholder='image'
+                      placeholder='اضافه صوره'
                       onChange={handleImageChange}
                     />
                     <button className='btn btn-danger mt-2' onClick={handleUpload}>
-                      Upload
+                      {loading ? (
+                        <>
+                          <Spinner animation='border' size='sm'></Spinner> ...تحميل
+                        </>
+                      ) : (
+                        'ضافه'
+                      )}
                     </button>
                   </div>
                 </div>
@@ -52,14 +68,13 @@ const Banners = () => {
         </>
       ) : (
         <div className='pt-2'>
+          <div></div>
           <table className='table gs-7 gy-7 gx-7 table-hover border '>
             <thead className='border-0'>
               <tr className='fw-bold fs-6 text-gray-800 border-bottom border-gray-200 text-center'>
-                <th>Title</th>
-                <th>Image</th>
-                <th>Start_date</th>
-                <th>Updated_Date</th>
-                <th>Event</th>
+                <th>العنوان</th>
+                <th>الصوره</th>
+                <th>العمليه</th>
               </tr>
             </thead>
             <tbody className='border-0'>
@@ -69,11 +84,14 @@ const Banners = () => {
                   <th>
                     <img src={e.image} className='w-50 h-75px' alt={e.title} />
                   </th>
-                  <th>{e.created_at}</th>
-                  <th>{e.updated_at}</th>
                   <th>
                     <div className='d-flex gap-3 justify-content-center'>
-                      <button className='btn btn-update'>تحديث</button>
+                      <button
+                        className='btn btn-success'
+                        onClick={() => navigate(`/updateBanners/${e.id}`)}
+                      >
+                        تعديل
+                      </button>
                       <button className='btn btn-danger' onClick={() => deleteService(e.id)}>
                         حذف
                       </button>
